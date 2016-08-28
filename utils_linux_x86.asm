@@ -10,8 +10,7 @@
 %define SYS_PTRACE 26
 %define SYS_DUP2 63
 %define SYS_SOCKETCALL 102
-
+%define SYS_GETDENTS 141
 
 %define SOCK_SOCKET 1
 %define SOCK_CONNECT 3
-

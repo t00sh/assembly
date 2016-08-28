@@ -43,4 +43,4 @@ RET:
 FILENAME:
 
     call RET
-filename: db 'hello.asm', 0x00
+filename: db 'key', 0x00

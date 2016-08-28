@@ -1,32 +1,35 @@
-BITS 32
+
 	GLOBAL _start
+
+    %include "../../../utils_linux_x86.asm"
+
 _start:
 	xor eax, eax
 	push eax
 	push byte '.'
 
 	;; sys_open(".", 0, 0)
-	mov al, 5      
-	mov ebx, esp   
-	xor ecx, ecx 
-	xor edx, edx 
-	int 0x80	
+	mov al, SYS_OPEN
+	mov ebx, esp
+	xor ecx, ecx
+	xor edx, edx
+	int 0x80
 
-	test eax,eax 
+	test eax,eax
 	jz error
-	
+
 	;;  getdents(fd,esp,0x3210)
-	mov ebx,eax 		
+	mov ebx,eax
 	xor edx,edx
 	xor eax,eax
-	mov dx, 0x3210 	
-	sub esp, edx 	
-	mov ecx, esp 	
-	mov al, 0x8d 	
+	mov dx, 0x3210
+	sub esp, edx
+	mov ecx, esp
+	mov al, SYS_GETDENTS
 	int 0x80
 
 	xchg eax,edx
-	
+
 	;; LOOP on struct linux_dirent
 .L1:
 	test edx,edx
@@ -35,16 +38,16 @@ _start:
 	lea eax, [ecx+10]
 
 	;; strlen(eax)
-	.strlen:	
+	.strlen:
 	mov esi, eax
 	.strlen_loop:
-	
+
 	movzx edi, byte[eax]
 	test edi,edi
 	jz .strlen_end
 	inc eax
 	jmp short .strlen_loop
-	
+
 	.strlen_end:
 	xor byte[eax], 0xa
 
@@ -56,7 +59,7 @@ _start:
 	sub edx, esi
 	inc edx
 	xor eax,eax
-	mov al,4
+	mov al, SYS_WRITE
 	int 0x80
 
 	popa
@@ -71,4 +74,3 @@ error:
 	    xor eax, eax
 	    inc eax
 	    int 0x80
-
